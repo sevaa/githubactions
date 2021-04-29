@@ -1,12 +1,12 @@
 {
     "manifestVersion": 1,
     "id": "githubactions",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "GitHub Actions",
     "description": "Task for running a GitHub workflow (action) and getting its artifacts",
     "publisher": "sevaalekseyev",
     "targets": [{"id": "Microsoft.VisualStudio.Services"}],
-    "categories": ["Build and release"],
+    "categories": ["Azure Pipelines"],
     "tags": ["pipeline","github","build", "release", "integration"],
     "repository":
     {
