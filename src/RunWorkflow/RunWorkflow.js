@@ -61,7 +61,8 @@ async function main()
             workflowInputs = "";
         }
 
-        workflowInputs = workflowInputs.trim();
+        if(workflowInputs)
+            workflowInputs = workflowInputs.trim();
         if(workflowInputs)
         {
             try
