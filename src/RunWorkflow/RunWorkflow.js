@@ -1,4 +1,5 @@
 const tl = require("azure-pipelines-task-lib/task");
+const rimraf = require('rimraf');
 const fs = require('fs');
 const axios = require("axios").default;
 const nodeStreamZip = require("node-stream-zip");
@@ -29,7 +30,7 @@ function timestamp()
 async function main()
 {
     try
-    {    
+    {   
         let ghToken, workflowName, ref, timeout, dlArtifacts, workflowInputs;
         if(tl.getVariable("Agent.Version")) //Running from the agent
         {
@@ -165,6 +166,7 @@ async function main()
             const artifacts = (await ghGet(`/actions/runs/${runID}/artifacts`)).data.artifacts;
             //Axios config for streaming archive downloads
             const conf = {responseType: "stream", headers: axConf.headers};
+            console.log(`Downloading artifacts under ${process.cwd()}.`)
 
             for(const artifact of artifacts)
             {
@@ -183,6 +185,13 @@ async function main()
                     console.log(`Downloaded artifact ${artName} - ${st.size} bytes, unzipping...`);
 
                     //Unzip it. Ideally, unzip straight from the web response stream would be cute.
+                    if(fs.existsSync(artName))
+                    {
+                        if(fs.statSync(artName).isDirectory())
+                            rimraf.sync(artName);
+                        else
+                            fs.unlinkSync(artName);
+                    }
                     fs.mkdirSync(artName);
                     const zipFile = new nodeStreamZip.async({file: zipFileName});
                     await zipFile.extract(null, artName);

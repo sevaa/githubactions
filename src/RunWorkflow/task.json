@@ -10,7 +10,7 @@
     {
         "Major": 1,
         "Minor": 0,
-        "Patch":1
+        "Patch":5
     },
     "demands": [],
     "instanceNameFormat": "Run $(workflow) on github.com/$(repo)",
@@ -37,14 +37,14 @@
             "type": "string",
             "label": "Owner/Repository",
             "required": true,
-            "helpMarkDown": "The owner name and the repo name, slash separated."
+            "helpMarkDown": "The owner name and the repo name, slash separated.\nIf your repo is at https://github.com/acme/widgets/, then this parameter should be \"acme/widgets\"."
         },
         {
             "name": "workflow",
             "type": "string",
             "label": "Workflow name",
             "required": false,
-            "helpMarkdown": "Name of the workflow to run, case insensitive. If blank, the first workflow in the repo will be chosen."
+            "helpMarkdown": "Name of the workflow to run, case insensitive. If blank, the first workflow in the repo will be chosen.\nThis parameter should match the contents of the `name:` line in your workflow's YAML file on GitHub.\nIMPORTANT: the workflow file must have a `workflow_dispatch:` line under `on:`."
         },
         {
             "name": "ref",
@@ -66,7 +66,7 @@
             "type": "boolean",
             "label": "Download artifacts",
             "defaultValue": true,
-            "helpMarkDown": "If the action publishes any artifacts, they will be downloaded into folders corresponding to artifact names."
+            "helpMarkDown": "If the action publishes any artifacts, they will be downloaded into subfolders under the current folder, corresponding to artifact names. The contents of existing folders will be overwritten.\nIn builds, the current folder is the sources folder (Build.SourcesDirectory)."
         },
         {
             "name": "inputs",
