@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "githubactions",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "name": "GitHub Actions",
     "description": "Task for running a GitHub workflow (action) and getting its artifacts",
     "publisher": "sevaalekseyev",
@@ -22,7 +22,9 @@
     "galleryFlags": ["Public"],
     "content":
     {
-        "details": { "path" : "readme.md" }
+        "details": { "path" : "readme.md" },
+        "license": {"path": "license.md"},
+        "privacypolicy": {"path": "privacy.md"}
     },
     "contributions":
     [
