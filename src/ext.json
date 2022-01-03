@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "githubactions",
-    "version": "1.0.8",
+    "version": "1.20.1",
     "name": "GitHub Actions",
     "description": "Task for running a GitHub workflow (action) and getting its artifacts",
     "publisher": "sevaalekseyev",
@@ -33,11 +33,18 @@
             "type": "ms.vss-distributed-task.task",
             "targets": ["ms.vss-distributed-task.tasks"],
             "properties": { "name": "RunWorkflow" }
+        },
+        {
+            "id": "dlartifacts",
+            "type": "ms.vss-distributed-task.task",
+            "targets": ["ms.vss-distributed-task.tasks"],
+            "properties": { "name": "DownloadArtifacts" }
         }
     ],
     "files":
     [
         {"path": "RunWorkflow"},
+        {"path": "DownloadArtifacts"},
         {"path": "img", "addressable": true}
     ],
     "scopes": [],
