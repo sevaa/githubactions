@@ -15,7 +15,7 @@ async function main()
 {
     try
     {   
-        let ghToken, workflowName;
+        let ghToken, workflowName, branch = false;
         if(tl.getVariable("Agent.Version")) //Running from the agent
         {
             const auth = tl.getEndpointAuthorization(tl.getInput("gh"), false).parameters;
@@ -28,6 +28,7 @@ async function main()
 
             repo = tl.getInput("repo");
             workflowName = tl.getInput("workflow");
+            branch = tl.getInput("branch");
         }
         else //Interactive run
         {
@@ -60,7 +61,10 @@ async function main()
 
         // Retrieve the runs, get the last one
         const runs = (await ghGet("/actions/runs")).data.workflow_runs
-            .filter(r => r.workflow_id == workflow.id && r.status == 'completed' && r.conclusion == 'success')
+            .filter(r => r.workflow_id == workflow.id &&
+                r.status == 'completed' &&
+                r.conclusion == 'success' &&
+                (!branch || branch == r.head_branch))
             .sort((l,r) => r.run_number - l.run_number);
         if(runs.length == 0)
         {
