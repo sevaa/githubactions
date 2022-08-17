@@ -29,12 +29,17 @@ async function main()
             repo = tl.getInput("repo");
             workflowName = tl.getInput("workflow");
             branch = tl.getInput("branch");
+            artNameFilter = tl.getInput("artNameFilter");
+            artNameFilterIsRegex = tl.getInput("artNameFilterIsRegex").toLowerCase() == "true";
         }
         else //Interactive run
         {
             ghToken = process.env.GITHUB_TOKEN;
             repo = process.argv[2];
             workflowName = process.argv[3];
+            branch = process.argv[4]
+            artNameFilter = process.argv[5];
+            artNameFilterIsRegex = false;
         }
 
         axConf = {headers:
@@ -75,7 +80,22 @@ async function main()
         console.log(`Found the last successful run, started at #${run.run_started_at}.`);
 
         //Download the artifacts, if any
-        const artifacts = (await ghGet(`/actions/runs/${runID}/artifacts`)).data.artifacts;
+        let artifacts = (await ghGet(`/actions/runs/${runID}/artifacts`)).data.artifacts;
+        if(artNameFilter)
+        {
+            let f;
+            if(artNameFilterIsRegex)
+            {
+                const re = new RegExp("^" + artNameFilter + "$", "i");
+                f = a => a.name.match(re);
+            }
+            else
+            {
+                const afl = artNameFilter.toLowerCase();
+                f = a => a.name.toLowerCase() == afl;
+            }
+            artifacts = artifacts.filter(f);
+        }
         //Axios config for streaming archive downloads
         const conf = {responseType: "stream", headers: axConf.headers};
         console.log(`Downloading artifacts under ${process.cwd()}.`)
