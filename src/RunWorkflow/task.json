@@ -10,7 +10,7 @@
     {
         "Major": 1,
         "Minor": 0,
-        "Patch":5
+        "Patch":6
     },
     "demands": [],
     "instanceNameFormat": "Run $(workflow) on github.com/$(repo)",
