@@ -132,7 +132,7 @@ async function main()
             catch(exc)
             {
                 tl.warning(`Error while downloading artifact ${artName}: ${exc.stack}`);
-                if(!!exc.isAxiosError)
+                if(!!exc.isAxiosError && exc.response && exc.response.data)
                     tl.warning(exc.response.data.message);
             }                
         }
