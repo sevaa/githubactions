@@ -10,13 +10,18 @@
     {
         "Major": 1,
         "Minor": 0,
-        "Patch": 2
+        "Patch": 3
     },
     "demands": [],
     "instanceNameFormat": "Get the artifacts from $(workflow) on github.com/$(repo)",
     "execution":
     {
         "Node10":
+        {
+            "target": "$(currentDirectory)/DownloadArtifacts.js",
+            "argumentFormat": ""
+        },
+        "Node16":
         {
             "target": "$(currentDirectory)/DownloadArtifacts.js",
             "argumentFormat": ""

@@ -10,13 +10,18 @@
     {
         "Major": 1,
         "Minor": 0,
-        "Patch":6
+        "Patch":7
     },
     "demands": [],
     "instanceNameFormat": "Run $(workflow) on github.com/$(repo)",
     "execution":
     {
         "Node10":
+        {
+            "target": "$(currentDirectory)/RunWorkflow.js",
+            "argumentFormat": ""
+        },
+        "Node16":
         {
             "target": "$(currentDirectory)/RunWorkflow.js",
             "argumentFormat": ""
