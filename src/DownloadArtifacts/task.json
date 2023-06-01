@@ -10,7 +10,7 @@
     {
         "Major": 1,
         "Minor": 0,
-        "Patch": 3
+        "Patch": 4
     },
     "demands": [],
     "instanceNameFormat": "Get the artifacts from $(workflow) on github.com/$(repo)",

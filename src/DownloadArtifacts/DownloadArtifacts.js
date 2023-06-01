@@ -65,11 +65,8 @@ async function main()
         console.log(`Found the workflow, #${workflow.id}/${workflow.name}.`);
 
         // Retrieve the runs, get the last one
-        const runs = (await ghGet("/actions/runs")).data.workflow_runs
-            .filter(r => r.workflow_id == workflow.id &&
-                r.status == 'completed' &&
-                r.conclusion == 'success' &&
-                (!branch || branch == r.head_branch))
+        const branchFilter = branch ? `&branch=${encodeURIComponent(branch)}` : '';
+        const runs = (await ghGet(`/actions/workflows/${workflow.id}/runs?per_page=100&status=success${branchFilter}`)).data.workflow_runs
             .sort((l,r) => r.run_number - l.run_number);
         if(runs.length == 0)
         {
