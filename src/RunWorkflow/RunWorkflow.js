@@ -109,8 +109,7 @@ async function main()
         console.log(`Found the workflow, #${workflow.id}/${workflow.name}.`);
 
         // Runs aren't sync. There's no result from run start. Need past run IDs.
-        const prevRuns = (await ghGet("/actions/runs")).data.workflow_runs;
-        const prevRunIDs = prevRuns.map(r => r.id);
+        const prevRunIDs = (await ghGet(`/actions/workflows/${workflow.id}/runs`)).data.workflow_runs.map(r => r.id);
 
         // Start the workflow run.
         console.log("Starting the action...")
@@ -122,8 +121,8 @@ async function main()
         while(true)
         {
             await sleep(500);
-            const runs = (await ghGet("/actions/runs")).data.workflow_runs;
-            const theRun = runs.find(r => r.name == workflow.name && prevRunIDs.indexOf(r.id) < 0);
+            const runs = (await ghGet(`/actions/workflows/${workflow.id}/runs`)).data.workflow_runs;
+            const theRun = runs.find(r => prevRunIDs.indexOf(r.id) < 0);
             //The situation where the very same workflow has been invoked elsewhere in this narrow time
             //window is not processed. This is a race condition. 
             if(theRun)
@@ -137,7 +136,7 @@ async function main()
         }
 
         // Busy loop until it's over :( Oh well.
-        // For better logging on the AzdevOps side, we could monitor jobs and steps
+        // For better logging on the AzDevOps side, we could monitor jobs and steps
         let waitTime = 1000; //Just in case, check every second in the very beginning. 
         const runStartTime = timestamp();        
         let run;
