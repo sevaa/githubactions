@@ -8,9 +8,9 @@
     "author": "Seva Alekseyev",
     "version":
     {
-        "Major": 1,
+        "Major": 2,
         "Minor": 0,
-        "Patch": 4
+        "Patch": 0
     },
     "demands": [],
     "instanceNameFormat": "Get the artifacts from $(workflow) on github.com/$(repo)",
@@ -71,6 +71,13 @@
             "label": "Name filter is a regular expression",
             "defaultValue": false,
             "helpMarkDown": "Check this to treat the artifact name filter as a regular expression in [JavaScript syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions). Case insensitive match, the filter string is expected to match the whole name."
+        },
+        {
+            "name": "noUnzip",
+            "type": "boolean",
+            "label": "Do not unzip",
+            "defaultValue": false,
+            "helpMarkDown": "Check this to keep the downloaded artifacts in the target folder as ZIP archives."
         }
     ]
 }

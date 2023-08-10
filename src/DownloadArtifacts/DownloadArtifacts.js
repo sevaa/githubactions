@@ -31,6 +31,7 @@ async function main()
             branch = tl.getInput("branch");
             artNameFilter = tl.getInput("artNameFilter");
             artNameFilterIsRegex = tl.getInput("artNameFilterIsRegex").toLowerCase() == "true";
+            noUnzip = tl.getInput("noUnzip").toLowerCase() == "true";
         }
         else //Interactive run
         {
@@ -40,6 +41,7 @@ async function main()
             branch = process.argv[4]
             artNameFilter = process.argv[5];
             artNameFilterIsRegex = false;
+            noUnzip = true;
         }
 
         axConf = {headers:
@@ -111,20 +113,27 @@ async function main()
                 await new Promise((resolve, err) => {fst.on("finish", resolve); fst.on("error", err); zipDownload.data.on("error", err)});
 
                 const st = fs.statSync(zipFileName);
-                console.log(`Downloaded artifact ${artName} - ${st.size} bytes, unzipping...`);
-
-                //Unzip it. Ideally, unzip straight from the web response stream would be cute.
-                if(fs.existsSync(artName))
+                if(noUnzip)
                 {
-                    if(fs.statSync(artName).isDirectory())
-                        rimraf.sync(artName);
-                    else
-                        fs.unlinkSync(artName);
+                    console.log(`Downloaded artifact ${artName} - ${st.size} bytes.`);
                 }
-                fs.mkdirSync(artName);
-                const zipFile = new nodeStreamZip.async({file: zipFileName});
-                await zipFile.extract(null, artName);
-                fs.unlinkSync(zipFileName);
+                else
+                {
+                    console.log(`Downloaded artifact ${artName} - ${st.size} bytes, unzipping...`);
+
+                    //Unzip it. Ideally, unzip straight from the web response stream would be cute.
+                    if(fs.existsSync(artName))
+                    {
+                        if(fs.statSync(artName).isDirectory())
+                            rimraf.sync(artName);
+                        else
+                            fs.unlinkSync(artName);
+                    }
+                    fs.mkdirSync(artName);
+                    const zipFile = new nodeStreamZip.async({file: zipFileName});
+                    await zipFile.extract(null, artName);
+                    fs.unlinkSync(zipFileName);
+                }
             }
             catch(exc)
             {
