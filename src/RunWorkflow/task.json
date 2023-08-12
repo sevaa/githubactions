@@ -8,9 +8,9 @@
     "author": "Seva Alekseyev",
     "version":
     {
-        "Major": 1,
+        "Major": 2,
         "Minor": 0,
-        "Patch":8
+        "Patch":0
     },
     "demands": [],
     "instanceNameFormat": "Run $(workflow) on github.com/$(repo)",
@@ -71,7 +71,15 @@
             "type": "boolean",
             "label": "Download artifacts",
             "defaultValue": true,
-            "helpMarkDown": "If the action publishes any artifacts, they will be downloaded into subfolders under the current folder, corresponding to artifact names. The contents of existing folders will be overwritten.\nIn builds, the current folder is the sources folder (Build.SourcesDirectory)."
+            "helpMarkDown": "If the action publishes any artifacts, they will be downloaded into subfolders (or, optionally, kept as ZIP archives) under the current folder, corresponding to artifact names. The contents of existing folders will be overwritten.\nIn builds, the current folder is the sources folder (Build.SourcesDirectory)."
+        },
+        {
+            "name": "noUnzip",
+            "type": "boolean",
+            "label": "Do not unzip",
+            "defaultValue": false,
+            "helpMarkDown": "Check this to keep the downloaded artifacts in the target folder as ZIP archives.",
+            "visibleRule": "dlArtifacts = true"
         },
         {
             "name": "inputs",
