@@ -39,6 +39,8 @@ async function main()
                 ghToken = auth.accessToken;
             else if("AccessToken" in auth && auth.AccessToken)
                 ghToken = auth.AccessToken;
+            else if ("IdToken" in auth && auth.IdToken)
+                throw new Error("InstallationToken-type endpoints are not supported in custom tasks. Please create and use a PAT or OAuth GitHub service endpoint.\nFeel free to leave your feedback at https://github.com/microsoft/azure-pipelines-tasks/issues/9394");
             else
                 throw new Error("Unable to retrieve the GitHub token from the service endpoint.")
 
