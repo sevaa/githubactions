@@ -1,0 +1,18 @@
+name: test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          mkdir dist
+          echo Hello >dist/a
+          
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.3
+        with:          
+          name: dist
+          path: dist    

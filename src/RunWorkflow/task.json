@@ -10,7 +10,7 @@
     {
         "Major": 2,
         "Minor": 0,
-        "Patch":0
+        "Patch":1
     },
     "demands": [],
     "instanceNameFormat": "Run $(workflow) on github.com/$(repo)",
@@ -32,7 +32,7 @@
     [
         {
             "name": "gh",
-            "type": "connectedService:github:OAuth,PersonalAccessToken,Token",
+            "type": "connectedService:github:OAuth,PersonalAccessToken,Token,InstallationToken",
             "label": "GitHub service connection",
             "required": true,
             "helpMarkDown": "A GitHub type service connection to use. The token must have the rights to read and invoke actions. Github Enterprise is not supported."
