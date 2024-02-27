@@ -4,32 +4,30 @@
     "friendlyName": "Download GitHub Workflow Artifacts",
     "description": "Downloads the artifacts from a GitHub workflow run",
     "category": "Utility",
-    "visibility": ["Build", "Release"],
+    "visibility": [
+        "Build",
+        "Release"
+    ],
     "author": "Seva Alekseyev",
-    "version":
-    {
-        "Major": 2,
+    "version": {
+        "Major": 3,
         "Minor": 0,
-        "Patch": 7
+        "Patch": 0
     },
     "demands": [],
     "instanceNameFormat": "Get the artifacts from $(workflow) on github.com/$(repo)",
-    "execution":
-    {
-        "Node10":
-        {
+    "execution": {
+        "Node10": {
             "target": "$(currentDirectory)/DownloadArtifacts.js",
             "argumentFormat": ""
         },
-        "Node16":
-        {
+        "Node16": {
             "target": "$(currentDirectory)/DownloadArtifacts.js",
             "argumentFormat": ""
         }
     },
     "groups": [],
-    "inputs":
-    [
+    "inputs": [
         {
             "name": "gh",
             "type": "connectedService:github:OAuth,PersonalAccessToken,Token,InstallationToken",
@@ -41,6 +39,7 @@
             "name": "repo",
             "type": "string",
             "label": "Owner/Repository",
+            "defaultValue": "$(Build.Repository.Name)",
             "required": true,
             "helpMarkDown": "The owner name and the repo name, slash separated.\nIf your repo is at https://github.com/acme/widgets/, then this parameter should be \"acme/widgets\"."
         },
@@ -55,8 +54,25 @@
             "name": "branch",
             "type": "string",
             "label": "Branch",
+            "defaultValue": "$(Build.SourceBranch)",
             "required": false,
             "helpMarkDown": "If provided, only actions against the specified branch will be considered. Internally, it's a filter by the \"head_branch\" property of the run."
+        },
+        {
+            "name": "versionHash",
+            "type": "string",
+            "label": "Source Version",
+            "defaultValue": "$(Build.SourceVersion)",
+            "required": false,
+            "helpMarkDown": "If provided, only actions against the specified version will be considered. Internally, it's a filter by the \"head_sha\" property of the run."
+        },
+        {
+            "name": "triggerEvent",
+            "type": "string",
+            "label": "Event",
+            "required": false,
+            "defaultValue": "push",
+            "helpMarkDown": "If provided, only actions against the specified event will be considered. Internally, it's a filter by the \"event\" property of the run."
         },
         {
             "name": "artNameFilter",
@@ -81,4 +97,3 @@
         }
     ]
 }
-
