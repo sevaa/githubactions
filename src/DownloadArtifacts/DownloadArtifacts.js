@@ -15,7 +15,7 @@ async function main()
 {
     try
     {   
-        let ghToken, workflowName, branch = false;
+        let ghToken, workflowName, branch, versionHash, triggerEvent = false;
         if(tl.getVariable("Agent.Version")) //Running from the agent
         {
             const auth = tl.getEndpointAuthorization(tl.getInput("gh"), false).parameters;
@@ -31,6 +31,8 @@ async function main()
             repo = tl.getInput("repo");
             workflowName = tl.getInput("workflow");
             branch = tl.getInput("branch");
+            versionHash = tl.getInput("versionHash");
+            triggerEvent = tl.getInput("triggerEvent");
             artNameFilter = tl.getInput("artNameFilter");
             artNameFilterIsRegex = tl.getInput("artNameFilterIsRegex").toLowerCase() == "true";
             noUnzip = tl.getInput("noUnzip").toLowerCase() == "true";
@@ -41,7 +43,9 @@ async function main()
             repo = process.argv[2];
             workflowName = process.argv[3];
             branch = process.argv[4]
-            artNameFilter = process.argv[5];
+            versionHash = process.argv[5];
+            triggerEvent = process.argv[6];
+            artNameFilter = process.argv[7];
             artNameFilterIsRegex = false;
             noUnzip = true;
         }
@@ -70,7 +74,10 @@ async function main()
 
         // Retrieve the runs, get the last one
         const branchFilter = branch ? `&branch=${encodeURIComponent(branch)}` : '';
-        const runs = (await ghGet(`/actions/workflows/${workflow.id}/runs?per_page=100&status=success${branchFilter}`)).data.workflow_runs
+        const triggerEventFilter = triggerEvent ? `&event=${encodeURIComponent(triggerEvent)}` : '';
+        const versionHashFilter = versionHash ? `&head_sha=${encodeURIComponent(versionHash)}` : '';
+
+        const runs = (await ghGet(`/actions/workflows/${workflow.id}/runs?per_page=100&status=success${branchFilter}${triggerEventFilter}${versionHashFilter}`)).data.workflow_runs
             .sort((l,r) => r.run_number - l.run_number);
         if(runs.length == 0)
         {
