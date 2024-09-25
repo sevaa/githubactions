@@ -84,7 +84,10 @@ async function main()
             workflowInputs = false;
 
         if(!ref)
-            ref = "master";
+        {
+            ref = (await ghGet('')).data.default_branch;
+            console.log(`Defaulting to branch ${ref}.`)
+        }
         const workflowParams = {ref: ref};
         if(workflowInputs)
             workflowParams.inputs = workflowInputs;
@@ -94,7 +97,7 @@ async function main()
             {
                 "Authorization": `token ${ghToken}`,
                 "Accept": "application/vnd.github.v3+json",
-                "User-Agent": "Azure DevOps task sevaalekseyev/GithubActiond/RunWorkflow"
+                "User-Agent": "Azure DevOps task sevaalekseyev/GithubActions/RunWorkflow"
             }};
 
         //Find the right workflow
