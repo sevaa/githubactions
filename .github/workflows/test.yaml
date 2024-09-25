@@ -12,7 +12,7 @@ jobs:
           echo Hello >dist/a
           
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.3
+        uses: actions/upload-artifact@v3.2.1
         with:          
           name: dist
           path: dist    
