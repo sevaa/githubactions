@@ -12,7 +12,7 @@
     "version": {
         "Major": 3,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "demands": [],
     "instanceNameFormat": "Get the artifacts from $(workflow) on github.com/$(repo)",
@@ -22,6 +22,14 @@
             "argumentFormat": ""
         },
         "Node16": {
+            "target": "$(currentDirectory)/DownloadArtifacts.js",
+            "argumentFormat": ""
+        },
+        "Node20_1": {
+            "target": "$(currentDirectory)/DownloadArtifacts.js",
+            "argumentFormat": ""
+        },
+        "Node24": {
             "target": "$(currentDirectory)/DownloadArtifacts.js",
             "argumentFormat": ""
         }
