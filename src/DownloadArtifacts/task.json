@@ -10,9 +10,9 @@
     ],
     "author": "Seva Alekseyev",
     "version": {
-        "Major": 3,
+        "Major": 4,
         "Minor": 0,
-        "Patch": 1
+        "Patch": 0
     },
     "demands": [],
     "instanceNameFormat": "Get the artifacts from $(workflow) on github.com/$(repo)",
@@ -102,6 +102,12 @@
             "label": "Do not unzip",
             "defaultValue": false,
             "helpMarkDown": "Check this to keep the downloaded artifacts in the target folder as ZIP archives."
+        },
+        {
+            "name": "runID",
+            "type": "string",
+            "label": "Run ID",
+            "helpMarkDown": "If the run discovery logic fails to find the latest run, use this to force one. The run ID is a number after \"runs\" in a URL to a workflow run page in the Github Web UI."
         }
     ]
 }

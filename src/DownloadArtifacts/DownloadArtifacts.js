@@ -15,7 +15,7 @@ async function main()
 {
     try
     {   
-        let ghToken, workflowName, branch, versionHash, triggerEvent = false;
+        let ghToken, workflowName, branch, versionHash, triggerEvent = false, runID;
         if(tl.getVariable("Agent.Version")) //Running from the agent
         {
             const auth = tl.getEndpointAuthorization(tl.getInput("gh"), false).parameters;
@@ -36,6 +36,7 @@ async function main()
             artNameFilter = tl.getInput("artNameFilter");
             artNameFilterIsRegex = tl.getInput("artNameFilterIsRegex").toLowerCase() == "true";
             noUnzip = tl.getInput("noUnzip").toLowerCase() == "true";
+            runID = tl.getInput("runID");
         }
         else //Interactive run
         {
@@ -48,6 +49,7 @@ async function main()
             artNameFilter = process.argv[7];
             artNameFilterIsRegex = false;
             noUnzip = true;
+            runID = "";
         }
 
         axConf = {headers:
@@ -72,20 +74,29 @@ async function main()
             workflow = workflows[0];
         console.log(`Found the workflow, #${workflow.id}/${workflow.name}.`);
 
-        // Retrieve the runs, get the last one
-        const branchFilter = branch ? `&branch=${encodeURIComponent(branch)}` : '';
-        const triggerEventFilter = triggerEvent ? `&event=${encodeURIComponent(triggerEvent)}` : '';
-        const versionHashFilter = versionHash ? `&head_sha=${encodeURIComponent(versionHash)}` : '';
-
-        const runs = (await ghGet(`/actions/workflows/${workflow.id}/runs?per_page=100&status=success${branchFilter}${triggerEventFilter}${versionHashFilter}`)).data.workflow_runs
-            .sort((l,r) => r.run_number - l.run_number);
-        if(runs.length == 0)
+        if(runID == "")
         {
-            tl.error(`The workflow ${workflow.name} has no successful runs.`);
-            process.exit(1);
+            // Retrieve the runs, get the last one
+            const branchFilter = branch ? `&branch=${encodeURIComponent(branch)}` : '';
+            const triggerEventFilter = triggerEvent ? `&event=${encodeURIComponent(triggerEvent)}` : '';
+            const versionHashFilter = versionHash ? `&head_sha=${encodeURIComponent(versionHash)}` : '';
+
+            runs = (await ghGet(`/actions/workflows/${workflow.id}/runs?per_page=100&status=completed${branchFilter}${triggerEventFilter}${versionHashFilter}`)).data.workflow_runs
+                .filter(r => r.conclusion == "success")
+                .sort((l,r) => r.run_number - l.run_number);
+            if(runs.length == 0)
+            {
+                tl.error(`The workflow ${workflow.name} has no successful runs.`);
+                process.exit(1);
+            }
+            const run = runs[0];
+            runID = run.id;
+            console.log(`Found the last successful run, #${run.run_number}, \"${run.display_title}\", started at #${run.run_started_at}.`);
         }
-        const run = runs[0], runID = run.id;
-        console.log(`Found the last successful run, started at #${run.run_started_at}.`);
+        else
+        {
+            console.log(`Using run ${runID}.`);
+        }
 
         //Download the artifacts, if any
         let artifacts = (await ghGet(`/actions/runs/${runID}/artifacts`)).data.artifacts;

@@ -1,0 +1,8 @@
+{"dependencies":
+    {
+        "azure-pipelines-task-lib": "*",
+        "axios" : "*",
+        "node-stream-zip": "*",
+        "rimraf": "*"
+    }
+}
