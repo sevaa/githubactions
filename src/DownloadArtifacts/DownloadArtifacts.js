@@ -81,14 +81,23 @@ async function main()
             const triggerEventFilter = triggerEvent ? `&event=${encodeURIComponent(triggerEvent)}` : '';
             const versionHashFilter = versionHash ? `&head_sha=${encodeURIComponent(versionHash)}` : '';
 
-            runs = (await ghGet(`/actions/workflows/${workflow.id}/runs?per_page=100&status=completed${branchFilter}${triggerEventFilter}${versionHashFilter}`)).data.workflow_runs
-                .filter(r => r.conclusion == "success")
-                .sort((l,r) => r.run_number - l.run_number);
-            if(runs.length == 0)
+            let runs = [], page = 0, total;
+            do
             {
-                tl.error(`The workflow ${workflow.name} has no successful runs.`);
-                process.exit(1);
+                const url = `/actions/workflows/${workflow.id}/runs?per_page=100&page=${page+1}&status=completed${branchFilter}${triggerEventFilter}${versionHashFilter}`;
+                const rdata = (await ghGet(url)).data;
+                if(!total)
+                    total = rdata.total_count;
+                page++;
+                runs = runs.concat(rdata.workflow_runs.filter(r => r.conclusion == "success"));
+                if(runs.length == 0)
+                {
+                    tl.error(`The workflow ${workflow.name} has no successful runs.`);
+                    process.exit(1);
+                }
             }
+            while(page*100<total);
+            runs = runs.sort((l,r) => r.run_number - l.run_number);
             const run = runs[0];
             runID = run.id;
             console.log(`Found the last successful run, #${run.run_number}, \"${run.display_title}\", started at #${run.run_started_at}.`);
