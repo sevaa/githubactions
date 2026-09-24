@@ -16,6 +16,8 @@ async function main()
     try
     {   
         let ghToken, workflowName, branch, versionHash, triggerEvent = false, runID;
+        const verbose = tl.getVariable("System.Debug") === "true";
+        const vlog = (msg) => {if(verbose) console.log(msg)};
         if(tl.getVariable("Agent.Version")) //Running from the agent
         {
             const auth = tl.getEndpointAuthorization(tl.getInput("gh"), false).parameters;
@@ -26,7 +28,7 @@ async function main()
             else if ("IdToken" in auth && auth.IdToken) //IntegrationToken endpoints have IdToken, IdSignature
                 throw new Error("InstallationToken-type endpoints are not supported in custom tasks. Please create and use a PAT or OAuth GitHub service endpoint.\nFeel free to leave your feedback at https://github.com/microsoft/azure-pipelines-tasks/issues/9394");
             else
-                throw new Error("Unable to retrieve the GitHub token from the service endpoint.")
+                throw new Error("Unable to retrieve the GitHub token from the service endpoint.");
 
             repo = tl.getInput("repo");
             workflowName = tl.getInput("workflow");
@@ -52,6 +54,8 @@ async function main()
             runID = "";
         }
 
+        vlog(`Token ends with: ${ghToken.substring(ghToken.length-5)}`);        
+
         axConf = {headers:
             {
                 "Authorization": `token ${ghToken}`,
@@ -74,7 +78,7 @@ async function main()
             workflow = workflows[0];
         console.log(`Found the workflow, #${workflow.id}/${workflow.name}.`);
 
-        if(runID == "")
+        if((runID ?? "") == "")
         {
             // Retrieve the runs, get the last one
             const branchFilter = branch ? `&branch=${encodeURIComponent(branch)}` : '';
@@ -85,22 +89,27 @@ async function main()
             do
             {
                 const url = `/actions/workflows/${workflow.id}/runs?per_page=100&page=${page+1}&status=completed${branchFilter}${triggerEventFilter}${versionHashFilter}`;
+                vlog(`Run filter: ${url}`);
                 const rdata = (await ghGet(url)).data;
+                vlog(`Fetched page ${page} with ${rdata.workflow_runs.length} out of ${rdata.total_count}`);
                 if(!total)
                     total = rdata.total_count;
                 page++;
                 runs = runs.concat(rdata.workflow_runs.filter(r => r.conclusion == "success"));
-                if(runs.length == 0)
-                {
-                    tl.error(`The workflow ${workflow.name} has no successful runs.`);
-                    process.exit(1);
-                }
+                vlog(`${runs.length} successful runs`);
             }
             while(page*100<total);
+
+            if(runs.length == 0)
+            {
+                tl.error(`The workflow ${workflow.name} has no successful runs, or the token on the GitHub service endpoint has no "workflow" permission.`);
+                process.exit(1);
+            }
+
             runs = runs.sort((l,r) => r.run_number - l.run_number);
             const run = runs[0];
             runID = run.id;
-            console.log(`Found the last successful run, #${run.run_number}, \"${run.display_title}\", started at #${run.run_started_at}.`);
+            console.log(`Found the last successful run, ID ${run.id} #${run.run_number}, \"${run.display_title ?? "(no title)"}\", started at #${run.run_started_at}.`);
         }
         else
         {
